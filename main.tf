@@ -5,7 +5,7 @@ provider "kubernetes" {
 resource "kubernetes_service_account" "this" {
   metadata {
     name      = "${var.tiller_service_account_name}"
-    namespace = "kube-system"
+    namespace = "${var.tiller_namespace}"
 
     labels {
       "app.kubernetes.io/name"       = "helm"
@@ -46,7 +46,7 @@ resource "kubernetes_cluster_role_binding" "this" {
 resource "kubernetes_deployment" "this" {
   metadata {
     name      = "tiller-deploy"
-    namespace = "kube-system"
+    namespace = "${var.tiller_namespace}"
 
     labels {
       "app.kubernetes.io/name"       = "helm"
