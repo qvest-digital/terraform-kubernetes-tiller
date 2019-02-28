@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.1] - unreleased
 
+### Added
+
+- The service account token (RBAC) will now automatically be mounted.
+
 ### Fixed
 
 - The installation namespace is now truly optional and stuff won't

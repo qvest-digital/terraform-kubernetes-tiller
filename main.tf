@@ -80,7 +80,14 @@ resource "kubernetes_deployment" "this" {
       }
 
       spec {
-        #automount_service_account_token = true
+
+        volume {
+          name = "${kubernetes_service_account.this.default_secret_name}"
+          secret {
+            secret_name = "${kubernetes_service_account.this.default_secret_name}"
+          }
+        }
+
         #priority_class_name = "system-cluster-critical"
         service_account_name = "${kubernetes_service_account.this.metadata.0.name}"
 
@@ -128,6 +135,12 @@ resource "kubernetes_deployment" "this" {
 
             initial_delay_seconds = 1
             timeout_seconds       = 1
+          }
+
+          volume_mount {
+            mount_path = "/var/run/secrets/kubernetes.io/serviceaccount"
+            name = "${kubernetes_service_account.this.default_secret_name}"
+            read_only = true
           }
 
           resources {}
