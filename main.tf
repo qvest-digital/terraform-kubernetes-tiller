@@ -32,11 +32,12 @@ resource "kubernetes_cluster_role_binding" "this" {
 
   role_ref {
     api_group = "rbac.authorization.k8s.io"
-    kind      = "ClusterAdmin"
+    kind      = "ClusterRole"
     name      = "cluster-admin"
   }
 
   subject {
+    api_group = ""
     kind      = "ServiceAccount"
     name      = "${kubernetes_service_account.this.metadata.0.name}"
     namespace = "${kubernetes_service_account.this.metadata.0.namespace}"
