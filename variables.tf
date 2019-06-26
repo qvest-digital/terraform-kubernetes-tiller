@@ -17,8 +17,8 @@ variable "tiller_history_max" {
 }
 
 variable "tiller_service_account_name" {
-  type = "string"
-  default = "tiller"
+  type        = "string"
+  default     = "tiller"
   description = "Name of the service account to be created for the Tiller deployment."
 }
 
