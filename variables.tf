@@ -1,6 +1,6 @@
 variable "tiller_version" {
   type        = "string"
-  default     = "2.12.3"
+  default     = "2.14.1"
   description = "Version of Tiller to be deployed."
 }
 
