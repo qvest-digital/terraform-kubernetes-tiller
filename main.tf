@@ -1,5 +1,5 @@
 provider "kubernetes" {
-  version = "~> 1.5"
+  version = "~> 1.7"
 }
 
 resource "kubernetes_service_account" "this" {
