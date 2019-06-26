@@ -7,13 +7,13 @@ resource "kubernetes_service_account" "this" {
     name      = "${var.tiller_service_account_name}"
     namespace = "${var.tiller_namespace}"
 
-    labels {
+    labels = {
       "app.kubernetes.io/name"       = "helm"
       "app.kubernetes.io/component"  = "tiller"
       "app.kubernetes.io/managed-by" = "terraform"
     }
 
-    annotations {
+    annotations = {
       "field.cattle.io/description" = "Helm Package Manager: required server-side component"
     }
   }
@@ -23,7 +23,7 @@ resource "kubernetes_cluster_role_binding" "this" {
   metadata {
     name = "tiller"
 
-    labels {
+    labels = {
       "app.kubernetes.io/name"       = "helm"
       "app.kubernetes.io/component"  = "tiller"
       "app.kubernetes.io/managed-by" = "terraform"
@@ -49,24 +49,24 @@ resource "kubernetes_deployment" "this" {
     name      = "tiller-deploy"
     namespace = "${var.tiller_namespace}"
 
-    labels {
+    labels = {
       "app.kubernetes.io/name"       = "helm"
       "app.kubernetes.io/component"  = "tiller"
       "app.kubernetes.io/managed-by" = "terraform"
       "app.kubernetes.io/version"    = "${var.tiller_version}"
     }
 
-    annotations {
+    annotations = {
       "field.cattle.io/description" = "Helm Package Manager: required server-side component"
     }
   }
 
   spec {
     replicas = 1
-    strategy = {}
+    strategy {}
 
     selector {
-      match_labels {
+      match_labels = {
         "app.kubernetes.io/name"      = "helm"
         "app.kubernetes.io/component" = "tiller"
       }
@@ -74,14 +74,13 @@ resource "kubernetes_deployment" "this" {
 
     template {
       metadata {
-        labels {
+        labels = {
           "app.kubernetes.io/name"      = "helm"
           "app.kubernetes.io/component" = "tiller"
         }
       }
 
       spec {
-
         volume {
           name = "${kubernetes_service_account.this.default_secret_name}"
           secret {
@@ -140,8 +139,8 @@ resource "kubernetes_deployment" "this" {
 
           volume_mount {
             mount_path = "/var/run/secrets/kubernetes.io/serviceaccount"
-            name = "${kubernetes_service_account.this.default_secret_name}"
-            read_only = true
+            name       = "${kubernetes_service_account.this.default_secret_name}"
+            read_only  = true
           }
 
           resources {}
@@ -153,13 +152,13 @@ resource "kubernetes_deployment" "this" {
 
 resource "kubernetes_service" "this" {
   metadata {
-    labels {
+    labels = {
       "app.kubernetes.io/name"       = "helm"
       "app.kubernetes.io/component"  = "tiller"
       "app.kubernetes.io/managed-by" = "terraform"
     }
 
-    annotations {
+    annotations = {
       "field.cattle.io/description" = "Helm Package Manager: required server-side component"
     }
 
