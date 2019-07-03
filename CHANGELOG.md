@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 2019-07-03
+
+Thanks to  [Steven Miller](https://github.com/sjmiller609) for the pull request
+that initiated this release!
+
+### Updated
+
+- The minimum required version of Terraform is now v0.12.
+
+### Changed
+
+- The service account token is now automatically mounted which reduces the
+  complexity of the module's configuration slightly by using a new feature
+  that has been introduced with version 1.8 of the kubernetes provider plugin.
+
+### Added
+
+- A node selector can now be specified to control where the tiller pod
+  should be deployed.
+- The parameter `sessionAffinity` can now be specified when configuring
+  the Tiller service.
+
 ## [2.0.0] - 2019-06-26
 
 Thanks to [Noah Fontes](https://github.com/impl) for the pull request

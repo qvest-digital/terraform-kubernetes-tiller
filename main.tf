@@ -13,6 +13,7 @@ resource "kubernetes_service_account" "this" {
       "field.cattle.io/description" = "Helm Package Manager: required server-side component"
     }
   }
+  automount_service_account_token = true
 }
 
 resource "kubernetes_cluster_role_binding" "this" {
@@ -74,19 +75,19 @@ resource "kubernetes_deployment" "this" {
         labels = {
           "app.kubernetes.io/name"      = "helm"
           "app.kubernetes.io/component" = "tiller"
+          "a.kubernetes.io/version"     = var.tiller_version
+
           # helm uses these pod labels to find tiller, so they must be set:
           app  = "helm"
           name = "tiller"
+
+          version = var.tiller_version
         }
       }
 
       spec {
-        volume {
-          name = kubernetes_service_account.this.default_secret_name
-          secret {
-            secret_name = kubernetes_service_account.this.default_secret_name
-          }
-        }
+
+        automount_service_account_token = true
 
         #priority_class_name = "system-cluster-critical"
         service_account_name = kubernetes_service_account.this.metadata[0].name
@@ -137,15 +138,10 @@ resource "kubernetes_deployment" "this" {
             timeout_seconds       = 1
           }
 
-          volume_mount {
-            mount_path = "/var/run/secrets/kubernetes.io/serviceaccount"
-            name       = kubernetes_service_account.this.default_secret_name
-            read_only  = true
-          }
-
           resources {
           }
         }
+        node_selector = var.tiller_pod_node_selector
       }
     }
   }

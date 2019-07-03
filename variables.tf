@@ -28,9 +28,20 @@ variable "tiller_service_type" {
   description = "Type of Tiller's Kubernetes service object."
 }
 
+variable "tiller_service_session_affinity" {
+  type        = string
+  default     = "None"
+  description = "Session affinity of the Tiller service."
+}
+
 variable "tiller_image_pull_policy" {
   type        = string
   default     = "IfNotPresent"
   description = "Default pull policy to be used for the Tiller container image."
 }
 
+variable "tiller_pod_node_selector" {
+  type        = map(string)
+  default     = {}
+  description = "Node selector to be applied to the tiller pod."
+}
