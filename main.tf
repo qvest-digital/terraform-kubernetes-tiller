@@ -1,11 +1,7 @@
-provider "kubernetes" {
-  version = "~> 1.7"
-}
-
 resource "kubernetes_service_account" "this" {
   metadata {
-    name      = "${var.tiller_service_account_name}"
-    namespace = "${var.tiller_namespace}"
+    name      = var.tiller_service_account_name
+    namespace = var.tiller_namespace
 
     labels = {
       "app.kubernetes.io/name"       = "helm"
@@ -39,21 +35,21 @@ resource "kubernetes_cluster_role_binding" "this" {
   subject {
     api_group = ""
     kind      = "ServiceAccount"
-    name      = "${kubernetes_service_account.this.metadata.0.name}"
-    namespace = "${kubernetes_service_account.this.metadata.0.namespace}"
+    name      = kubernetes_service_account.this.metadata[0].name
+    namespace = kubernetes_service_account.this.metadata[0].namespace
   }
 }
 
 resource "kubernetes_deployment" "this" {
   metadata {
     name      = "tiller-deploy"
-    namespace = "${var.tiller_namespace}"
+    namespace = var.tiller_namespace
 
     labels = {
       "app.kubernetes.io/name"       = "helm"
       "app.kubernetes.io/component"  = "tiller"
       "app.kubernetes.io/managed-by" = "terraform"
-      "app.kubernetes.io/version"    = "${var.tiller_version}"
+      "app.kubernetes.io/version"    = var.tiller_version
     }
 
     annotations = {
@@ -63,7 +59,8 @@ resource "kubernetes_deployment" "this" {
 
   spec {
     replicas = 1
-    strategy {}
+    strategy {
+    }
 
     selector {
       match_labels = {
@@ -77,7 +74,6 @@ resource "kubernetes_deployment" "this" {
         labels = {
           "app.kubernetes.io/name"      = "helm"
           "app.kubernetes.io/component" = "tiller"
-
           # helm uses these pod labels to find tiller, so they must be set:
           app  = "helm"
           name = "tiller"
@@ -86,28 +82,28 @@ resource "kubernetes_deployment" "this" {
 
       spec {
         volume {
-          name = "${kubernetes_service_account.this.default_secret_name}"
+          name = kubernetes_service_account.this.default_secret_name
           secret {
-            secret_name = "${kubernetes_service_account.this.default_secret_name}"
+            secret_name = kubernetes_service_account.this.default_secret_name
           }
         }
 
         #priority_class_name = "system-cluster-critical"
-        service_account_name = "${kubernetes_service_account.this.metadata.0.name}"
+        service_account_name = kubernetes_service_account.this.metadata[0].name
 
         container {
           env {
             name  = "TILLER_NAMESPACE"
-            value = "${var.tiller_namespace}"
+            value = var.tiller_namespace
           }
 
           env {
             name  = "TILLER_HISTORY_MAX"
-            value = "${var.tiller_history_max}"
+            value = var.tiller_history_max
           }
 
           image             = "gcr.io/kubernetes-helm/tiller:v${var.tiller_version}"
-          image_pull_policy = "${var.tiller_image_pull_policy}"
+          image_pull_policy = var.tiller_image_pull_policy
 
           liveness_probe {
             http_get {
@@ -143,11 +139,12 @@ resource "kubernetes_deployment" "this" {
 
           volume_mount {
             mount_path = "/var/run/secrets/kubernetes.io/serviceaccount"
-            name       = "${kubernetes_service_account.this.default_secret_name}"
+            name       = kubernetes_service_account.this.default_secret_name
             read_only  = true
           }
 
-          resources {}
+          resources {
+          }
         }
       }
     }
@@ -167,7 +164,7 @@ resource "kubernetes_service" "this" {
     }
 
     name      = "tiller-deploy"
-    namespace = "${var.tiller_namespace}"
+    namespace = var.tiller_namespace
   }
 
   spec {
@@ -180,9 +177,10 @@ resource "kubernetes_service" "this" {
     selector = {
       "app.kubernetes.io/name"      = "helm"
       "app.kubernetes.io/component" = "tiller"
-      "app.kubernetes.io/version"   = "${var.tiller_version}"
+      "app.kubernetes.io/version"   = var.tiller_version
     }
 
-    type = "${var.tiller_service_type}"
+    type = var.tiller_service_type
   }
 }
+
