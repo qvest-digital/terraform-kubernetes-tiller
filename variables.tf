@@ -45,3 +45,21 @@ variable "tiller_pod_node_selector" {
   default     = {}
   description = "Node selector to be applied to the tiller pod."
 }
+
+variable "tiller_tls" {
+  type = object({
+    enabled         = bool
+    verify          = bool
+    ca_cert_pem     = string
+    private_key_pem = string
+    cert_pem        = string
+  })
+  default = {
+    enabled         = false
+    verify          = false
+    ca_cert_pem     = null
+    private_key_pem = null
+    cert_pem        = null
+  }
+  description = "TLS configuration for Tiller."
+}

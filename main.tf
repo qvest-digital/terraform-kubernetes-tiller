@@ -13,6 +13,7 @@ resource "kubernetes_service_account" "this" {
       "field.cattle.io/description" = "Helm Package Manager: required server-side component"
     }
   }
+
   automount_service_account_token = true
 }
 
@@ -38,6 +39,27 @@ resource "kubernetes_cluster_role_binding" "this" {
     kind      = "ServiceAccount"
     name      = kubernetes_service_account.this.metadata[0].name
     namespace = kubernetes_service_account.this.metadata[0].namespace
+  }
+}
+
+resource "kubernetes_secret" "this_tls" {
+  count = var.tiller_tls.enabled ? 1 : 0
+
+  metadata {
+    name      = "tiller-secrets"
+    namespace = var.tiller_namespace
+
+    labels = {
+      "app.kubernetes.io/name"       = "helm"
+      "app.kubernetes.io/component"  = "tiller"
+      "app.kubernetes.io/managed-by" = "terraform"
+    }
+  }
+
+  data = {
+    "tls.key" = var.tiller_tls.private_key_pem
+    "tls.crt" = var.tiller_tls.cert_pem
+    "ca.crt"  = var.tiller_tls.ca_cert_pem
   }
 }
 
@@ -86,8 +108,18 @@ resource "kubernetes_deployment" "this" {
       }
 
       spec {
-
         automount_service_account_token = true
+
+        dynamic "volume" {
+          for_each = [for enabled in [var.tiller_tls.enabled] : enabled if enabled]
+
+          content {
+            name = "tiller-certs"
+            secret {
+              secret_name = kubernetes_secret.this_tls[0].metadata.0.name
+            }
+          }
+        }
 
         #priority_class_name = "system-cluster-critical"
         service_account_name = kubernetes_service_account.this.metadata[0].name
@@ -101,6 +133,31 @@ resource "kubernetes_deployment" "this" {
           env {
             name  = "TILLER_HISTORY_MAX"
             value = var.tiller_history_max
+          }
+
+          env {
+            name  = "TILLER_TLS_ENABLE"
+            value = var.tiller_tls.enabled ? "1" : ""
+          }
+
+          env {
+            name  = "TILLER_TLS_VERIFY"
+            value = var.tiller_tls.enabled && var.tiller_tls.verify ? "1" : ""
+          }
+
+          env {
+            name  = "TILLER_TLS_CERTS"
+            value = "/var/run/tiller/certs"
+          }
+
+          dynamic "volume_mount" {
+            for_each = [for enabled in [var.tiller_tls.enabled] : enabled if enabled]
+
+            content {
+              name       = "tiller-certs"
+              mount_path = "/var/run/tiller/certs"
+              read_only  = true
+            }
           }
 
           image             = "gcr.io/kubernetes-helm/tiller:v${var.tiller_version}"
@@ -141,6 +198,7 @@ resource "kubernetes_deployment" "this" {
           resources {
           }
         }
+
         node_selector = var.tiller_pod_node_selector
       }
     }
