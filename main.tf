@@ -136,6 +136,11 @@ resource "kubernetes_deployment" "this" {
           }
 
           env {
+            name = "TILLER_STORAGE"
+            value = var.tiller_storage
+          }
+
+          env {
             name  = "TILLER_TLS_ENABLE"
             value = var.tiller_tls.enabled ? "1" : ""
           }

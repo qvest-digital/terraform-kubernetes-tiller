@@ -1,6 +1,6 @@
 variable "tiller_version" {
   type        = string
-  default     = "2.14.2"
+  default     = "2.14.3"
   description = "Version of Tiller to be deployed."
 }
 
@@ -34,6 +34,18 @@ variable "tiller_service_session_affinity" {
   description = "Session affinity of the Tiller service."
 }
 
+variable "tiller_sql_connection_string" {
+  type = string
+  default = ""
+  description = "SQL connection string to use (only used if 'tiller_storage' is set to 'sql')."
+}
+
+variable "tiller_sql_dialect" {
+  type = string
+  default = "postgres"
+  description = "SQL dialect to use."
+}
+
 variable "tiller_image_pull_policy" {
   type        = string
   default     = "IfNotPresent"
@@ -45,6 +57,13 @@ variable "tiller_pod_node_selector" {
   default     = {}
   description = "Node selector to be applied to the tiller pod."
 }
+
+variable "tiller_storage" {
+  type = string
+  default = "configmap"
+  description = "Storage driver to use. One of 'configmap', 'memory', 'sql' or 'secret'."
+}
+
 
 variable "tiller_tls" {
   type = object({
