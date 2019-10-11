@@ -136,7 +136,7 @@ resource "kubernetes_deployment" "this" {
           }
 
           env {
-            name = "TILLER_STORAGE"
+            name  = "TILLER_STORAGE"
             value = var.tiller_storage
           }
 

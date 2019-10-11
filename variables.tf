@@ -35,14 +35,14 @@ variable "tiller_service_session_affinity" {
 }
 
 variable "tiller_sql_connection_string" {
-  type = string
-  default = ""
+  type        = string
+  default     = ""
   description = "SQL connection string to use (only used if 'tiller_storage' is set to 'sql')."
 }
 
 variable "tiller_sql_dialect" {
-  type = string
-  default = "postgres"
+  type        = string
+  default     = "postgres"
   description = "SQL dialect to use."
 }
 
@@ -59,8 +59,8 @@ variable "tiller_pod_node_selector" {
 }
 
 variable "tiller_storage" {
-  type = string
-  default = "configmap"
+  type        = string
+  default     = "configmap"
   description = "Storage driver to use. One of 'configmap', 'memory', 'sql' or 'secret'."
 }
 
