@@ -97,7 +97,7 @@ resource "kubernetes_deployment" "this" {
         labels = {
           "app.kubernetes.io/name"      = "helm"
           "app.kubernetes.io/component" = "tiller"
-          "a.kubernetes.io/version"     = var.tiller_version
+          "app.kubernetes.io/version"   = var.tiller_version
 
           # helm uses these pod labels to find tiller, so they must be set:
           app  = "helm"
