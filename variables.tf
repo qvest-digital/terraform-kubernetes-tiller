@@ -82,3 +82,15 @@ variable "tiller_tls" {
   }
   description = "TLS configuration for Tiller."
 }
+
+variable "tolerations" {
+  type        = list(map(string))
+  default     = []
+  description = "Tolerations to apply to Tiller deployment"
+}
+
+variable "node_selectors" {
+  type        = map(string)
+  default     = {}
+  description = "Map of {label: value} to use as node selector for Tiller deployment"
+}
