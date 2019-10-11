@@ -8,3 +8,4 @@
 
 - Noah Fontes &lt;noah.fontes@puppet.com&gt;
 - Steven Miller &lt;sjmiller609@gmail.com&gt;
+- Terje Torkelsen &lt;tertork@gmail.com>&gt;
